@@ -27,7 +27,7 @@ main([_, File]) ->
       io:format("An error occured during start: ~p:~p~n~p~n", [Type1, Error1, Trace1]),
       erlang:halt(2)
   end,
-
+  timer:sleep(5000),
   erlang:halt(0).
 
 start() -> start(?ALL_LINTERS).
@@ -37,8 +37,9 @@ start(Linters) when is_list(Linters) ->
 
 init(File) -> init(File, ?ALL_LINTERS).
 
-init(_File, Linters) when is_list(Linters) ->
-  ok.
+init(File, Linters) when is_list(Linters) ->
+  lists:map(fun (Linter) -> erlang_analyzer_linter:prepare(Linter, File) end,
+            Linters).
 
 analyze(_Name, _Code) ->
   {ok, #{export_all => []}}.
