@@ -11,7 +11,7 @@
 %%====================================================================
 
 %% escript Entry point
-main([_, File]) ->
+main([Exercise, BasePath]) ->
   try start() of
       _ -> ok
   catch
@@ -20,7 +20,7 @@ main([_, File]) ->
       erlang:halt(1)
   end,
   io:format("Application booted~n"),
-  try init(File) of
+  try init(BasePath) of
       _ -> ok
   catch
     Type1:Error1:Trace1 ->
@@ -35,13 +35,23 @@ start() -> start(?ALL_LINTERS).
 start(Linters) when is_list(Linters) ->
   io:format("supervisor result: ~p~n", [erlang_analyzer_sup:start_link(Linters)]).
 
-init(File) -> init(File, ?ALL_LINTERS).
+init(BasePath) -> init(BasePath, ?ALL_LINTERS).
 
-init(File, Linters) when is_list(Linters) ->
-  lists:map(fun (Linter) -> erlang_analyzer_linter:prepare(Linter, File) end,
-            Linters).
+init(BasePath, Linters) when is_list(Linters) ->
+  Files = filelib:wildcard("**/*.erl", BasePath),
+  io:format("Files: ~p~n", [Files]),
+  FileLinter =
+    lists:flatmap(fun (File) ->
+                      lists:map(fun (Linter) -> {File, Linter} end, Linters)
+                  end, Files),
+  io:format("FileLinters: ~p~n", [FileLinter]),
+  lists:map(fun ({File, Linter}) -> erlang_analyzer_linter:prepare(Linter, File) end,
+            FileLinter).
 
-analyze(_Name, _Code) ->
+analyze(File, Code) ->
+  analyze(File, Code, ?ALL_LINTERS).
+
+analyze(_Name, _Code, Linters) when is_list(Linters) ->
   {ok, #{export_all => []}}.
 
 %%====================================================================
