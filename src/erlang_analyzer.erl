@@ -1,7 +1,7 @@
 -module(erlang_analyzer).
 
 %% API exports
--export([main/1, start/0, start/1, analyze/2]).
+-export([main/1, start/0, start/1, analyze/2, analyze/3]).
 
 -define(ALL_LINTERS,
         [export_all]).
@@ -48,10 +48,17 @@ init(BasePath, Linters) when is_list(Linters) ->
   lists:map(fun ({File, Linter}) -> erlang_analyzer_linter:prepare(Linter, File) end,
             FileLinter).
 
-analyze(File, Code) ->
-  analyze(File, Code, ?ALL_LINTERS).
+analyze(BasePath, File) ->
+  FullPath = filename:join(BasePath, File),
+  Code     = file:read_file(FullPath),
+  analyze(BasePath, File, Code).
 
-analyze(_Name, _Code, Linters) when is_list(Linters) ->
+analyze(BasePath, File, Code) when is_list(Code) ->
+  analyze(BasePath, File, unicode:characters_to_binary(Code));
+analyze(BasePath, File, Code) ->
+  analyze(BasePath, File, Code, ?ALL_LINTERS).
+
+analyze(BasePath, File, Code, Linters) when is_list(Linters) ->
   {ok, #{export_all => []}}.
 
 %%====================================================================
