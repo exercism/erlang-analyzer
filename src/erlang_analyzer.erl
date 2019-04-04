@@ -10,7 +10,6 @@
 %% API functions
 %%====================================================================
 
-%% escript Entry point
 main([Exercise, BasePath]) ->
   try start() of
       _ -> ok
@@ -27,6 +26,13 @@ main([Exercise, BasePath]) ->
       io:format("An error occured during start: ~p:~p~n~p~n", [Type1, Error1, Trace1]),
       erlang:halt(2)
   end,
+  try analyze(BasePath, Exercise) of
+      _ -> ok
+  catch
+    Type2:Error2:Trace2 ->
+      io:format("An error occured during analysis: ~p:~p~n~p", [Type2, Error2, Trace2]),
+      erlang:halt(3)
+  end,
   timer:sleep(5000),
   erlang:halt(0).
 
@@ -38,7 +44,7 @@ start(Linters) when is_list(Linters) ->
 init(BasePath) -> init(BasePath, ?ALL_LINTERS).
 
 init(BasePath, Linters) when is_list(Linters) ->
-  Files = filelib:wildcard("**/*.erl", BasePath),
+  Files = filelib:wildcard("*.erl", BasePath),
   io:format("Files: ~p~n", [Files]),
   FileLinter =
     lists:flatmap(fun (File) ->
@@ -53,12 +59,15 @@ analyze(BasePath, File) ->
   Code     = file:read_file(FullPath),
   analyze(BasePath, File, Code).
 
-analyze(BasePath, File, Code) when is_list(Code) ->
-  analyze(BasePath, File, unicode:characters_to_binary(Code));
+analyze(BasePath, File, Code) when is_binary(Code) ->
+  analyze(BasePath, File, unicode:characters_to_list(Code));
 analyze(BasePath, File, Code) ->
   analyze(BasePath, File, Code, ?ALL_LINTERS).
 
 analyze(BasePath, File, Code, Linters) when is_list(Linters) ->
+  {ok, IoData} = file:open(Code, [ram]),
+  {ok, Forms}  = epp_dodger:parse(IoData),
+  io:format("Forms: ~p~n", [Forms]),
   {ok, #{export_all => []}}.
 
 %%====================================================================
