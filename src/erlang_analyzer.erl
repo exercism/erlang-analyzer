@@ -56,17 +56,19 @@ init(BasePath, Linters) when is_list(Linters) ->
 
 analyze(BasePath, File) ->
   FullPath = filename:join(BasePath, File),
-  Code     = file:read_file(FullPath),
-  analyze(BasePath, File, Code).
+  case file:open(FullPath, [read]) of
+    {ok, FD} ->
+      analyze(BasePath, File, FD);
+    {error, Reason} ->
+      io:format("Unable to open file \"~s\": ~p~n", [FullPath, Reason]),
+      {error, Reason}
+  end.
 
-analyze(BasePath, File, Code) when is_binary(Code) ->
-  analyze(BasePath, File, unicode:characters_to_list(Code));
-analyze(BasePath, File, Code) ->
-  analyze(BasePath, File, Code, ?ALL_LINTERS).
+analyze(BasePath, File, FD) ->
+  analyze(BasePath, File, FD, ?ALL_LINTERS).
 
-analyze(BasePath, File, Code, Linters) when is_list(Linters) ->
-  {ok, IoData} = file:open(Code, [ram]),
-  {ok, Forms}  = epp_dodger:parse(IoData),
+analyze(BasePath, File, FD, Linters) when is_list(Linters) ->
+  {ok, Forms}  = epp_dodger:parse(FD),
   io:format("Forms: ~p~n", [Forms]),
   {ok, #{export_all => []}}.
 
