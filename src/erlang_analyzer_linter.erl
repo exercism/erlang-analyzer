@@ -1,11 +1,11 @@
 -module(erlang_analyzer_linter).
 
 -callback init(string()) -> {ok, term()} | {error, term()}.
--callback handle_form(term()) -> {ok, term()}.
+-callback handle_form(term(), term()) -> {ok, term()}.
 -callback get_lints(term()) -> {ok, list(term())}.
 
--export([start_link/1, prepare/2]).
--export([init/1, handle_cast/2]).
+-export([start_link/1, prepare/2, check/3, get/2]).
+-export([init/1, handle_cast/2, handle_call/3]).
 
 -record(state, {name, module, filestate = #{}}).
 
@@ -22,10 +22,19 @@ start_link(Linter) ->
 prepare(Linter, File) ->
   gen_server:cast(Linter, {prepare, File}).
 
+check(Linter, File, Form) ->
+  gen_server:cast(Linter, {check, File, Form}).
+
+get(Linter, File) ->
+  gen_server:call(Linter, {get, File}, infinity).
+
 init({Name, Module}) ->
   io:format("Initialising linter \"~p\"~n", [Name]),
   State = #state{name = Name, module = Module},
   {ok, State}.
+
+handle_call({get, File}, _, State) ->
+  {reply, [], State}.
 
 handle_cast({prepare, File}, State) ->
   Module   = State#state.module,
@@ -37,4 +46,12 @@ handle_cast({prepare, File}, State) ->
     {error, Reason} ->
       io:format("Error: ~p~n~p~n", [File, Reason]),
       erlang:throw('Im not yet sure how to deal with this')
+  end;
+handle_cast({check, File, Form}, State) ->
+  Module   = State#state.module,
+  FileData = State#state.filestate,
+  case Module:handle_form(Form, FileData) of
+    {ok, LinterState} ->
+      FileData2 = maps:put(File, LinterState, FileData),
+      {noreply, State#state{filestate = FileData2}}
   end.
