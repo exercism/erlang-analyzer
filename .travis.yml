@@ -1,0 +1,11 @@
+---
+language: erlang
+otp_release:
+  - 21.0
+
+install:
+  - "[[ -d ~/bin ]] || mkdir -p ~/bin"
+  - "[[ -f ~/bin/rebar3 ]] || (wget -O ~/bin/rebar3 https://s3.amazonaws.com/rebar3/rebar3 && chmod a+x ~/bin/rebar3)"
+
+script:
+  - rebar3 ct
