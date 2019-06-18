@@ -5,5 +5,5 @@
 -export([init/1]).
 
 init(File) ->
-  io:format("Initialising 'export_all' for ~p~n", [File]),
+  logger:notice("Initialising 'export_all' for ~p", [File]),
   {ok, []}.
