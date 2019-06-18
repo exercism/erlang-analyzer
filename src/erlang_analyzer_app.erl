@@ -9,6 +9,7 @@
 ]).
 
 start(normal, []) ->
+  logger:notice("Starting application"),
   erlang_analyzer_sup:start_link(?ALL_LINTERS).
 
 stop(_) -> ok.

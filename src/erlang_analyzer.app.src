@@ -2,6 +2,7 @@
  [{description, "An escript"},
   {vsn, "0.1.0"},
   {registered, []},
+  {mod, {erlang_analyzer_app, []}},
   {applications,
    [kernel,
     stdlib
