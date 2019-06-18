@@ -11,13 +11,7 @@
 %%====================================================================
 
 main([Exercise, BasePath]) ->
-  try start() of
-      _ -> ok
-  catch
-    Type:Error:Trace ->
-      io:format("An error occured during start: ~p:~p~n~p~n", [Type, Error, Trace]),
-      erlang:halt(1)
-  end,
+  {ok, _} = application:ensure_all_started(erlang_analyzer),
   io:format("Application booted~n"),
   try init(BasePath) of
       _ -> ok
