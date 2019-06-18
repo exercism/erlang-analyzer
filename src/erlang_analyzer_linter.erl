@@ -10,13 +10,13 @@
 -record(state, {name, module, filestate = #{}}).
 
 start_link(Linter) ->
-  io:format("Starting linter \"~s\"~n", [Linter]),
+  logger:notice("Starting linter \"~s\"", [Linter]),
   LinterModule = list_to_atom("erlang_analyzer_linter_" ++ atom_to_list(Linter)),
   try gen_server:start({local, Linter}, ?MODULE, {Linter, LinterModule}, []) of
       A -> A
   catch
     T:E:S ->
-      io:format("Failed starting linter \"~s\":~n~p:~p~n~p~n", [Linter, T, E, S])
+      logger:error("Failed starting linter \"~s\":~n~p:~p~n~p", [Linter, T, E, S])
   end.
 
 prepare(Linter, File) ->
@@ -29,7 +29,7 @@ get(Linter, File) ->
   gen_server:call(Linter, {get, File}, infinity).
 
 init({Name, Module}) ->
-  io:format("Initialising linter \"~p\"~n", [Name]),
+  logger:notice("Initialising linter \"~p\"", [Name]),
   State = #state{name = Name, module = Module},
   {ok, State}.
 
@@ -44,7 +44,7 @@ handle_cast({prepare, File}, State) ->
       FileData2 = maps:put(File, LinterState, FileData),
       {noreply, State#state{filestate = FileData2}};
     {error, Reason} ->
-      io:format("Error: ~p~n~p~n", [File, Reason]),
+      logger:error("Error: ~p~n~p", [File, Reason]),
       erlang:throw('Im not yet sure how to deal with this')
   end;
 handle_cast({check, File, Form}, State) ->

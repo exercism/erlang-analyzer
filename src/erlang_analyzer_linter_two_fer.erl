@@ -5,7 +5,7 @@
 -export([init/1, handle_form/2]).
 
 init(File) ->
-  io:format("INit 'two_fer' for ~p~n", [File]),
+  logger:notice("Init 'two_fer' for ~p", [File]),
   {ok, []}.
 
 %% handle_form({tree,attribute,_,_} = Form, State) ->
