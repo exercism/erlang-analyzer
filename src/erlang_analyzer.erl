@@ -23,10 +23,12 @@ main([Exercise, BasePath]) ->
   end,
   logger:notice("Analyzers configured"),
   try analyze(BasePath, Exercise) of
-      _ -> ok
+      Data -> 
+        logger:notice("~p", [Data]), ok
   catch
     Type2:Error2:Trace2 ->
       logger:error("An error occured during analysis: ~p:~p~n~p", [Type2, Error2, Trace2]),
+      timer:sleep(100),
       erlang:halt(3)
   end,
   timer:sleep(5000),
@@ -46,20 +48,23 @@ init(BasePath, Linters) when is_list(Linters) ->
             FileLinter).
 
 analyze(BasePath, File) ->
-  FullPath = filename:join(BasePath, File),
-  case file:open(FullPath, [read]) of
-    {ok, FD} ->
-      analyze(BasePath, File, FD);
+  File1 = lists:map(fun
+    ($-) -> $_;
+    (C) -> C end, File) ++ ".erl",
+  FullPath = filename:join(BasePath, File1),
+  case file:read_file(FullPath) of
+    {ok, Content} ->
+      analyze(BasePath, File1, Content);
     {error, Reason} ->
       logger:error("Unable to open file \"~s\": ~p", [FullPath, Reason]),
       {error, Reason}
   end.
 
-analyze(BasePath, File, FD) ->
-  analyze(BasePath, File, FD, ?ALL_LINTERS).
+analyze(BasePath, File, Content) ->
+  analyze(BasePath, File, Content, ?ALL_LINTERS).
 
-analyze(BasePath, File, FD, Linters) when is_list(Linters) ->
-  {ok, Forms}  = epp_dodger:parse(FD),
+analyze(BasePath, File, Content, Linters) when is_list(Linters) ->
+  Forms = ktn_code:parse_tree(Content),
   logger:notice("Forms: ~p", [Forms]),
   {ok, #{export_all => []}}.
 

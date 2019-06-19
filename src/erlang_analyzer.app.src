@@ -5,7 +5,8 @@
   {mod, {erlang_analyzer_app, []}},
   {applications,
    [kernel,
-    stdlib
+    stdlib,
+    katana_code
    ]},
   {env,[]},
   {modules, []},

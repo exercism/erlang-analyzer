@@ -7,7 +7,7 @@ all() ->
   [does_not_allow_export_all,
    does_allow_regular].
 
-% init_per_suite(_) -> {skip, not_yet_implemented}.
+init_per_suite(_) -> {skip, not_yet_implemented}.
 
 init_per_testcase(does_not_allow_export_all, Config) -> [{file_name, "export_all_example_bad.erl"} |Config];
 init_per_testcase(does_allow_regular,        Config) -> [{file_name, "export_all_example_good.erl"}|Config].
