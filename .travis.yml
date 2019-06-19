@@ -8,4 +8,5 @@ install:
   - "[[ -f ~/bin/rebar3 ]] || (wget -O ~/bin/rebar3 https://s3.amazonaws.com/rebar3/rebar3 && chmod a+x ~/bin/rebar3)"
 
 script:
-  - rebar3 ct
+  - rebar3 eunit
+  - rebar3 dialyzer
