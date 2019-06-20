@@ -8,5 +8,6 @@ install:
   - "[[ -f ~/bin/rebar3 ]] || (wget -O ~/bin/rebar3 https://s3.amazonaws.com/rebar3/rebar3 && chmod a+x ~/bin/rebar3)"
 
 script:
-  - rebar3 eunit
-  - rebar3 dialyzer
+  # This will create some output every 30 seconds and keep track about memory usage
+  - while sleep 30; do echo "=====[ $SECONDS seconds still running ]====="; free -m; done &
+  - make check
