@@ -11,9 +11,11 @@ no_export_all(Config, Target, _) ->
   end.
 
 find_export_all(#{content := Content}) ->
-  CompileAttrs   = lists:filter(fun (#{type  := compile})                 -> true; (_) -> false end, Content),
-  ExportAllAttrs = lists:filter(fun (#{attrs := #{value := export_all}})  -> true; (_) -> false end, CompileAttrs),
-  _              = lists:map(   fun (#{attrs := #{location := Location}}) -> Location           end, ExportAllAttrs).
+  FilterFun = fun
+    (#{type := compile, attrs := #{value := export_all, location := Location}}) -> {true, Location};
+    (_) -> false
+  end,
+  lists:filtermap(FilterFun, Content).
 
 complain(Rule, {Line, Col}, File) ->
   #{
