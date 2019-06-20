@@ -36,8 +36,7 @@ main([_Exercise, _BasePath]) ->
   %     timer:sleep(100),
   %     erlang:halt(3)
   % end,
-  timer:sleep(250),
-  erlang:halt(0).
+  timer:sleep(250).
 
 % init(BasePath) -> init(BasePath, ?ALL_LINTERS).
 
