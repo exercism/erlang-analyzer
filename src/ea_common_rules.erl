@@ -24,11 +24,11 @@ all() ->
 
 -spec no_export_all(
   erlang_analyzer_config:config(),
-  erlang_analyzer_helpers:file(),
+  ea_files:file(),
   no_export_all_config())
 -> [comment()].
 no_export_all(Config, Target, _) ->
-  {Tree, _} = erlang_analyzer_helpers:parse_tree(Config, Target),
+  {Tree, _} = ea_files:parse_tree(Config, Target),
   case find_export_all(Tree) of
     [] -> [];
     Locations when is_list(Locations) ->
@@ -44,11 +44,11 @@ find_export_all(#{content := Content}) ->
 
 -spec no_test_version(
   erlang_analyzer_config:config(),
-  erlang_analyzer_helpers:file(),
+  ea_files:file(),
   no_test_version_config()
 ) -> [comment()].
 no_test_version(Config, Target, _) ->
-  {Tree, _} = erlang_analyzer_helpers:parse_tree(Config, Target),
+  {Tree, _} = ea_files:parse_tree(Config, Target),
   case find_test_version(Tree) of
     [] -> [];
     Locations when is_list(Locations) ->
@@ -66,11 +66,11 @@ find_test_version(#{content := Content}) ->
   end,
   lists:filtermap(FilterFun, Content).
 
--spec complain(atom(), {pos_integer(), pos_integer()}, erlang_analyzer_helpers:file()) -> comment().
+-spec complain(atom(), {pos_integer(), pos_integer()}, ea_files:file()) -> comment().
 complain(Rule, {Line, Col}, File) ->
   #{
     rule => {?MODULE, Rule},
     line => Line,
     col  => Col,
-    file => erlang_analyzer_helpers:filename(File)
+    file => ea_files:filename(File)
   }.

@@ -1,4 +1,4 @@
--module(erlang_analyzer_helpers).
+-module(ea_files).
 
 -export([filename/1, parse_tree/2]).
 
