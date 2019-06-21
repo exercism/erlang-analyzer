@@ -1,6 +1,10 @@
 {"1.1.0",
-[{<<"forms">>,{pkg,<<"forms">>,<<"0.0.1">>},0}]}.
+[{<<"aleppo">>,{pkg,<<"inaka_aleppo">>,<<"1.1.1">>},1},
+ {<<"forms">>,{pkg,<<"forms">>,<<"0.0.1">>},0},
+ {<<"katana_code">>,{pkg,<<"katana_code">>,<<"0.1.2">>},0}]}.
 [
 {pkg_hash,[
- {<<"forms">>, <<"45F3B10B6F859F95F2C2C1A1DE244D63855296D55ED8E93EB0DD116B3E86C4A6">>}]}
+ {<<"aleppo">>, <<"B0F7D05A118C5EBC3A735D68E92A7BD5837FE53455495EDE37CF0AA8BA4912E3">>},
+ {<<"forms">>, <<"45F3B10B6F859F95F2C2C1A1DE244D63855296D55ED8E93EB0DD116B3E86C4A6">>},
+ {<<"katana_code">>, <<"347D42D5E89AC6C4BF8D02B64633AC1BFE14B7724B5910260D39EFEAFE737F01">>}]}
 ].

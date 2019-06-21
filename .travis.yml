@@ -6,6 +6,10 @@ otp_release:
 install:
   - "[[ -d ~/bin ]] || mkdir -p ~/bin"
   - "[[ -f ~/bin/rebar3 ]] || (wget -O ~/bin/rebar3 https://s3.amazonaws.com/rebar3/rebar3 && chmod a+x ~/bin/rebar3)"
+  # - "[[ -f ~/bin/elvis ]] || (T=$(mktemp -d); curl https://github.com/inaka/elvis/archive/0.4.2.tar.gz | tar -xzC $T; cd $T; rebar3 escriptize; mv _build/default/bin/elvis ~/bin/elvis)"
 
 script:
-  - rebar3 ct
+  # This will create some output every 30 seconds and keep track about memory usage
+  - while sleep 30; do echo "=====[ $SECONDS seconds still running ]====="; free -m; done &
+  - make eunit
+  - make types
