@@ -1,4 +1,4 @@
--module(erlang_analyzer_common_rules).
+-module(ea_common_rules).
 
 -export([all/0]).
 -export([no_export_all/3, no_test_version/3]).
