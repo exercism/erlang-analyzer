@@ -20,13 +20,11 @@
 -spec parse_tree(ea_config:config(), file()) -> {tree_node(), file()}.
 parse_tree(_, File = #{tree := Tree}) ->
   {Tree, File};
-parse_tree(Config, File = #{content := Content}) ->
-  Tree  = ktn_code:parse_tree(Content),
-  File1 = put_field(tree, Tree, File),
-  parse_tree(Config, File1);
 parse_tree(Config, File) ->
-  {_, File1} = content(Config, File),
-  parse_tree(Config, File1).
+  {Content, File1} = content(Config, File),
+  Tree  = ktn_code:parse_tree(Content),
+  File2 = put_field(tree, Tree, File1),
+  parse_tree(Config, File2).
 
 -spec content(ea_config:config(), file()) -> {binary(), file()}.
 content(_Config, File = #{content := Content}) ->
