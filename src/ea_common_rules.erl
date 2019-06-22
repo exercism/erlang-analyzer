@@ -23,7 +23,7 @@ all() ->
   ]).
 
 -spec no_export_all(
-  erlang_analyzer_config:config(),
+  ea_config:config(),
   ea_files:file(),
   no_export_all_config())
 -> [comment()].
@@ -43,7 +43,7 @@ find_export_all(#{content := Content}) ->
   lists:filtermap(FilterFun, Content).
 
 -spec no_test_version(
-  erlang_analyzer_config:config(),
+  ea_config:config(),
   ea_files:file(),
   no_test_version_config()
 ) -> [comment()].
@@ -67,7 +67,7 @@ find_test_version(#{content := Content}) ->
   lists:filtermap(FilterFun, Content).
 
 -spec complain(
-  erlang_analyzer_config:config(),
+  ea_config:config(),
   atom(),
   {pos_integer(), pos_integer()},
   ea_files:file()
