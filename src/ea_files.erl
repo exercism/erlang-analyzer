@@ -43,6 +43,9 @@ full_path(Config = #{project_path := Base}, File) ->
 filename(_Config, File) when ?IS_NAME(File) -> File;
 filename(_Config, #{name := Name}) -> Name.
 
+-spec put_field(name,    name(),      file()) -> file()
+             ; (content, binary(),    file()) -> file()
+             ; (tree,    tree_node(), file()) -> file().
 put_field(Key, Value, File = #{}) ->
   maps:put(Key, Value, File);
 put_field(Key, Value, File) when ?IS_NAME(File) ->
