@@ -22,7 +22,7 @@ parse_tree(_, File = #{tree := Tree}) ->
   {Tree, File};
 parse_tree(Config, File = #{content := Content}) ->
   Tree  = ktn_code:parse_tree(Content),
-  File1 = maps:put(tree, Tree, File),
+  File1 = put_field(tree, Tree, File),
   parse_tree(Config, File1);
 parse_tree(Config, File) ->
   {_, File1} = content(Config, File),
