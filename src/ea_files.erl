@@ -25,9 +25,8 @@ parse_tree(Config, File = #{content := Content}) ->
   File1 = maps:put(tree, Tree, File),
   parse_tree(Config, File1);
 parse_tree(Config, File) ->
-  FullPath = full_path(Config, File),
-  {ok, Content} = file:read_file(FullPath),
-  parse_tree(Config, #{name => File, content => Content}).
+  {_, File1} = content(Config, File),
+  parse_tree(Config, File1).
 
 -spec content(ea_config:config(), file()) -> {binary(), file()}.
 content(_Config, File = #{content := Content}) ->
