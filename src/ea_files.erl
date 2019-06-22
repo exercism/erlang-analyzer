@@ -1,6 +1,6 @@
 -module(ea_files).
 
--export([filename/2, full_path/2, parse_tree/2]).
+-export([content/2, filename/2, full_path/2, parse_tree/2]).
 -export_type([file/0, name/0, tree_node/0]).
 
 %% TODO: fix type of `tree` field once https://github.com/inaka/katana-code/issues/27 got fixed.
@@ -29,6 +29,15 @@ parse_tree(Config, File) ->
   {ok, Content} = file:read_file(FullPath),
   parse_tree(Config, #{name => File, content => Content}).
 
+-spec content(ea_config:config(), file()) -> {binary(), file()}.
+content(_Config, File = #{content := Content}) ->
+  {Content, File};
+content(Config, File) ->
+  FullPath        = full_path(Config, File),
+  {ok, Content}   = file:read_file(FullPath),
+  FileWithContent = put_field(content, Content, File),
+  content(Config, FileWithContent).
+
 -spec full_path(ea_config:config(), file()) -> file:filename_all().
 full_path(Config = #{project_path := Base}, File) ->
   filename:join(Base, filename(Config, File)).
@@ -36,3 +45,8 @@ full_path(Config = #{project_path := Base}, File) ->
 -spec filename(ea_config:config(), file()) -> name().
 filename(_Config, File) when ?IS_NAME(File) -> File;
 filename(_Config, #{name := Name}) -> Name.
+
+put_field(Key, Value, File = #{}) ->
+  maps:put(Key, Value, File);
+put_field(Key, Value, File) when ?IS_NAME(File) ->
+  put_field(Key, Value, #{name => File}).
