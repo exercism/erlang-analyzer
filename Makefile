@@ -9,4 +9,4 @@ elvis:
 	elvis rock
 
 types:
-	rebar3 dialyzer
+	rebar3 as dialyzer dialyzer
