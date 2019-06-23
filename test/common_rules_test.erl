@@ -16,3 +16,8 @@ reports_when_there_is_a_test_version_exported_test() ->
   Config = #{project_path => filename:join([code:priv_dir(erlang_analyzer), "common-no-test-version", "0"])},
   File = filename:join("src", "test_version.erl"),
   ?assertMatch([#{rule := {ea_common_rules, no_test_version}}], ea_common_rules:no_test_version(Config, File, #{})).
+
+reports_when_there_is_a_underscore_before_a_variable_which_is_used_test() ->
+  Config = #{project_path => filename:join([code:priv_dir(erlang_analyzer), "common-used-ignored-variable", "0"])},
+  File = filename:join("src", "use_ignored.erl"),
+  ?assertMatch([#{rule := {ea_common_rules, use_ignored_variable}}], ea_common_rules:use_ignored_variable(Config, File, #{})).

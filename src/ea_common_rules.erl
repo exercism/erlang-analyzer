@@ -1,7 +1,7 @@
 -module(ea_common_rules).
 
 -export([all/0]).
--export([no_export_all/3, no_test_version/3]).
+-export([no_export_all/3, no_test_version/3, use_ignored_variable/3]).
 
 -define(COMPLAIN(Config, Location, Target), complain(Config, ?FUNCTION_NAME, Location, Target)).
 
@@ -12,8 +12,9 @@
   file := string() | binary()
 }.
 
--type no_export_all_config()   :: #{}.
--type no_test_version_config() :: #{}.
+-type no_export_all_config()        :: #{}.
+-type no_test_version_config()      :: #{}.
+-type use_ignored_variable_config() :: #{}.
 
 -spec all() -> [{atom(), atom(), map()}].
 all() ->
@@ -65,6 +66,42 @@ find_test_version(#{content := Content}) ->
     (_) -> false
   end,
   lists:filtermap(FilterFun, Content).
+
+-spec use_ignored_variable(
+  ea_config:config(),
+  ea_files:file(),
+  use_ignored_variable_config()
+) -> [comment()].
+use_ignored_variable(Config, Target, _) ->
+  {Tree, _} = ea_files:parse_tree(Config, Target),
+  case elvis_code:find(fun is_ignored_var/1, Tree, #{mode => zipper}) of
+    [] -> [];
+    UsedIgnoredVars ->
+      Locations = lists:map(fun (#{attrs := #{location := L}}) -> L end, UsedIgnoredVars),
+      lists:map(fun (Location) -> ?COMPLAIN(Config, Location, Target) end, Locations)
+  end.
+
+is_ignored_var(Zipper) ->
+  Node = zipper:node(Zipper),
+  case ktn_code:type(Node) of
+    var ->
+      Name = ktn_code:attr(name, Node),
+      [FirstChar|_] = atom_to_list(Name),
+      (FirstChar =:= $_) andalso (Name =/= '_') andalso not check_parent_match(Zipper);
+    _ -> false
+  end.
+
+check_parent_match(Zipper) ->
+  case zipper:up(Zipper) of
+    undefined -> false;
+    ParentZipper ->
+      Parent = zipper:node(ParentZipper),
+      case ktn_code:type(Parent) of
+        match ->
+          zipper:down(ParentZipper) == Zipper;
+        _ -> check_parent_match(ParentZipper)
+      end
+  end.
 
 -spec complain(
   ea_config:config(),
