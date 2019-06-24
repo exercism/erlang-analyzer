@@ -48,7 +48,10 @@ parse_tree(Config, File) ->
 %% @param File   the filename or metadata.
 %% @returns a tuple with a `binary()' representing the files content as read from disk as its first
 %%    and the updated {@link filedata()} as its second element.
--spec content(ea_config:config(), file()) -> {binary(), file()}.
+-spec content(
+  Config :: ea_config:config(),
+  File   :: file()
+) -> {binary(), file()}.
 content(_Config, File = #{content := Content}) ->
   {Content, File};
 content(Config, File) ->
@@ -61,7 +64,10 @@ content(Config, File) ->
 %% @param Config the project configuration.
 %% @param File   the filename or metadata.
 %% @returns the absolute path to the file on disk.
--spec full_path(ea_config:config(), file()) -> file:filename_all().
+-spec full_path(
+  Config :: ea_config:config(),
+  File   :: file()
+) -> file:filename_all().
 full_path(Config = #{project_path := Base}, File) ->
   filename:join(Base, filename(Config, File)).
 
@@ -69,13 +75,16 @@ full_path(Config = #{project_path := Base}, File) ->
 %% @param Config the project configuration.
 %% æparam File   the filename or metadata.
 %% @returns the filename relative to the project root.
--spec filename(ea_config:config(), file()) -> file:name_all().
+-spec filename(
+  Config :: ea_config:config(),
+  File   :: file()
+) -> file:name_all().
 filename(_Config, File) when ?IS_NAME(File) -> File;
 filename(_Config, #{name := Name}) -> Name.
 
--spec put_field(name,    file:name_all(), file()) -> filedata()
-             ; (content, binary(),        file()) -> filedata()
-             ; (tree,    tree_node(),     file()) -> filedata().
+-spec put_field(Key :: name,    Value :: file:name_all(), File :: file()) -> filedata()
+             ; (Key :: content, Value :: binary(),        File :: file()) -> filedata()
+             ; (Key :: tree,    Value :: tree_node(),     File :: file()) -> filedata().
 put_field(Key, Value, File = #{}) ->
   maps:put(Key, Value, File);
 put_field(Key, Value, File) when ?IS_NAME(File) ->
