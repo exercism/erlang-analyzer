@@ -20,7 +20,8 @@
 all() ->
   lists:map(fun ({F, O}) -> {?MODULE, F, O} end, [
     {no_export_all, #{}},
-    {no_test_version, #{}}
+    {no_test_version, #{}},
+    {use_ignored_variable, #{}}
   ]).
 
 -spec no_export_all(
