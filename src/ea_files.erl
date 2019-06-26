@@ -4,16 +4,10 @@
 %% To allow some sort of caching, it will also return a new `file()' which then encapsulates
 %% metadata. Future reads of an exisitng attribute in the return `file()' will return faster.
 %% @end
-%% @TODO fix type of {@link tree_node()} once
-%%   <a href="https://github.com/inaka/katana-code/issues/27">inaka/katana-code#27</a> got fixed.
 -module(ea_files).
 
 -export([content/2, filename/2, full_path/2, parse_tree/2]).
--export_type([file/0, filedata/0, tree_node/0]).
-
--type tree_node() :: map().
-%% A representation of the parsed file content. It is wrapped here until
-%% <a href="https://github.com/inaka/katana-code/issues/27">inaka/katana-code#27</a> got fixed.
+-export_type([file/0, filedata/0]).
 
 -type file() :: file:name_all()
               | filedata().
@@ -21,7 +15,7 @@
 
 -opaque filedata() :: #{ name    := file:name_all()
                        , content => binary()
-                       , tree    => tree_node()}.
+                       , tree    => ktn_code:tree_node()}.
 %% Contains a files metadata.
 
 -define(IS_NAME(Name), (is_binary(Name) orelse is_list(Name))).
@@ -34,7 +28,7 @@
 -spec parse_tree(
   Config :: ea_config:config(),
   File   :: file()
-) -> {tree_node(), filedata()}.
+) -> {ktn_code:tree_node(), filedata()}.
 parse_tree(_, File = #{tree := Tree}) ->
   {Tree, File};
 parse_tree(Config, File) ->
@@ -82,9 +76,9 @@ full_path(Config = #{project_path := Base}, File) ->
 filename(_Config, File) when ?IS_NAME(File) -> File;
 filename(_Config, #{name := Name}) -> Name.
 
--spec put_field(Key :: name,    Value :: file:name_all(), File :: file()) -> filedata()
-             ; (Key :: content, Value :: binary(),        File :: file()) -> filedata()
-             ; (Key :: tree,    Value :: tree_node(),     File :: file()) -> filedata().
+-spec put_field(Key :: name,    Value :: file:name_all(),      File :: file()) -> filedata()
+             ; (Key :: content, Value :: binary(),             File :: file()) -> filedata()
+             ; (Key :: tree,    Value :: ktn_code:tree_node(), File :: file()) -> filedata().
 put_field(Key, Value, File = #{}) ->
   maps:put(Key, Value, File);
 put_field(Key, Value, File) when ?IS_NAME(File) ->
