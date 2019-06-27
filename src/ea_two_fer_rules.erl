@@ -32,7 +32,10 @@ flatten_flat_list(Config, File, _) ->
 
 find_function_defs(Tree = #{content := Content}) ->
   Exported  = find_exports(Tree),
-  FilterFun = fun (Node) ->
+  lists:filtermap(find_function_defs_filter(Exported), Content).
+
+find_function_defs_filter(Exported) ->
+  fun (Node) ->
     case ktn_code:type(Node) =:= function of
       true ->
         #{attrs := #{name := F, arity := A}} = Node,
@@ -45,8 +48,7 @@ find_function_defs(Tree = #{content := Content}) ->
       false ->
         false
     end
-  end,
-  lists:filtermap(FilterFun, Content).
+  end.
 
 find_exports(#{content := Content}) ->
   FilterFun = fun
