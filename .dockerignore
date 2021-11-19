@@ -5,3 +5,4 @@ deps
 .github
 .gitignore
 .gitattributes
+.dockerignore
