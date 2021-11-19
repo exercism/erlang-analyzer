@@ -2,3 +2,4 @@ _build
 deps
 .appends
 .git
+.github
