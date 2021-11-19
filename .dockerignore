@@ -6,3 +6,4 @@ deps
 .gitignore
 .gitattributes
 .dockerignore
+Dockerfile
