@@ -4,3 +4,4 @@ deps
 .git
 .github
 .gitignore
+.gitattributes
