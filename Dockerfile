@@ -1,4 +1,4 @@
-FROM hexpm/erlang:25.3.2.3-alpine-3.18.2 AS erlang
+FROM hexpm/erlang:29.1-alpine-3.24.2 AS erlang
 
 WORKDIR /app
 ENV REBAR_VERSION=3.22.0
